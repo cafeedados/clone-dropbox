@@ -9,11 +9,26 @@ class DropboxController {
         this.namefileEl = this.snackModalEl.querySelector('.filename');//nome do arquivo na barrinha
         this.timeleftEl = this.snackModalEl.querySelector('.timeleft');//tempo restante
 
-
+        this.connectFirebase();
         this.initEvents();
 
     };
     //fim contructor
+
+    connectFirebase(){
+                // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBv7c7ip_ohAtn8PYtgQsbW8d4QAUWt_tY",
+            authDomain: "dropbox-clone-55eaf.firebaseapp.com",
+            databaseURL: "https://dropbox-clone-55eaf.firebaseio.com",
+            projectId: "dropbox-clone-55eaf",
+            storageBucket: "dropbox-clone-55eaf.appspot.com",
+            messagingSenderId: "446467172584",
+            appId: "1:446467172584:web:4ff243549c17f20be9c15d"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    };
 
     initEvents(){
         this.btnSendFileEl.addEventListener('click', event =>{
