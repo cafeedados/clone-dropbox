@@ -16,18 +16,18 @@ class DropboxController {
     //fim contructor
 
     connectFirebase(){
-                // Your web app's Firebase configuration
-        var firebaseConfig = {
-            apiKey: "AIzaSyBv7c7ip_ohAtn8PYtgQsbW8d4QAUWt_tY",
-            authDomain: "dropbox-clone-55eaf.firebaseapp.com",
-            databaseURL: "https://dropbox-clone-55eaf.firebaseio.com",
-            projectId: "dropbox-clone-55eaf",
-            storageBucket: "dropbox-clone-55eaf.appspot.com",
-            messagingSenderId: "446467172584",
-            appId: "1:446467172584:web:4ff243549c17f20be9c15d"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyAu-XigXHlxzAmIwj_I1IGgL0kwgxaZzbw",
+                authDomain: "dropboxclone-b483f.firebaseapp.com",
+                databaseURL: "https://dropboxclone-b483f.firebaseio.com",
+                projectId: "dropboxclone-b483f",
+                storageBucket: "dropboxclone-b483f.appspot.com",
+                messagingSenderId: "714138691221",
+                appId: "1:714138691221:web:3d58d3f28bdc0f13e51d9c"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
     };
 
     initEvents(){
@@ -40,15 +40,54 @@ class DropboxController {
         //configurar o change do inputfile
         this.inputFilesEl.addEventListener('change', event =>{
             
-            this.uploadTask(event.target.files); //o evento e o change o taget e qual o alvo ou seja pegar o elemento do input e o files que sao os arquivos selecionados
+            this.btnSendFileEl.disabled = true;
+
+            this.uploadTask(event.target.files).then(responses => {
+
+                responses.forEach(resp =>{
+
+                    console.log();
+
+                    this.getFirebaseRef().push().set(resp.files['input-file']);
+
+                    
+
+                });
+
+                this.uploadComplete()
+
+
+            }).catch(err =>{
+                this.uploadComplete()
+                console.error(err);
+
+
+            });
             
             this.modalShow();
 
-            this.inputFilesEl.value = '';
-
+            
         });
 
     };//final initEvents
+
+    uploadComplete(){
+
+        this.modalShow(false);
+
+        this.inputFilesEl.value = '';
+
+        this.btnSendFileEl.disabled = false;
+
+
+    };
+
+
+    getFirebaseRef(){
+
+        return firebase.database().ref('files');
+
+    }; //final getfirebase ref
 
 
     modalShow(show = true){
@@ -72,7 +111,7 @@ class DropboxController {
 
                 ajax.onload = event => {
 
-                    this.modalShow(false);
+                    
 
                     try{
                         resolve(JSON.parse(ajax.responseText))
@@ -82,7 +121,7 @@ class DropboxController {
                 };
 
                 ajax.onerror = event =>{
-                    this.modalShow(false);
+                   
                     reject(event);
                 };
 
