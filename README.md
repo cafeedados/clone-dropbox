@@ -24,7 +24,10 @@ Projeto consiste em um clone do dropbox, com foco na manipulação dos dados vin
 <img src="/docs/img/barra-de-carregamento.png">
 
 **Pastas:**
-<img src="/docs/img/home-com-pastas.pngg">
+<img src="/docs/img/home-com-pastas.png">
+
+**Arquivos Carregados:**
+<img src="/docs/img/selecionando-varios-com-ctrl-ou-shift.png">
 
 
 
