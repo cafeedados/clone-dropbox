@@ -1,4 +1,4 @@
-# clone-dropbox
+# Clone Dropbox
  
 [![made-for-VSCode](https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg)](https://code.visualstudio.com/)
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
@@ -13,6 +13,18 @@ Projeto consiste em um clone do dropbox, com foco na manipulação dos dados vin
 
 **Tela Principal:**
 <img src="/docs/img/home-dropbox-clone.png">
+
+**Tela Principal / Alert de Criação de Pastas:**
+<img src="/docs/img/criacao-pasta-dropbox-clone.png">
+
+**Envio de Arquivos:**
+<img src="/docs/img/abertura-de-documentos.png">
+
+**Barra de Carregamento:**
+<img src="/docs/img/barra-de-carregamento.png">
+
+**Pastas:**
+<img src="/docs/img/home-com-pastas.pngg">
 
 
 
