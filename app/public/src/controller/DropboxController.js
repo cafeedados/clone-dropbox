@@ -1,7 +1,9 @@
+
 class DropboxController {
 
     constructor(){
         
+        this.onselectionchange = new Event('selectionchange');
         this.btnSendFileEl = document.querySelector('#btn-send-file');
         this.inputFilesEl = document.querySelector('#files'); //input files
         this.snackModalEl  = document.querySelector('#react-snackbar-root'); //modal de carregamento do arquivo
@@ -9,6 +11,10 @@ class DropboxController {
         this.namefileEl = this.snackModalEl.querySelector('.filename');//nome do arquivo na barrinha
         this.timeleftEl = this.snackModalEl.querySelector('.timeleft');//tempo restante
         this.listFilesEl = document.querySelector('#list-of-files-and-directories');
+
+        this.btnNewFolder = document.querySelector('#btn-new-folder')
+        this.btnRename = document.querySelector('#btn-rename')
+        this.btnDelete = document.querySelector('#btn-delete')
 
 
 
@@ -32,9 +38,112 @@ class DropboxController {
             };
             // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
-    };
+    };//fim conectFurebase
+
+
+    getSelection(){
+
+
+        return this.listFilesEl.querySelectorAll('.selected');
+
+    }//fim GetSelection
+
+    removeTask(){
+
+        let promises = [];
+
+        this.getSelection().forEach(li=>{
+            let file = JSON.parse(li.dataset.file);
+            let key = li.dataset.key;
+
+            let formData = new FormData();
+
+            formData.append('path', file.path);
+            formData.append('key', key);
+
+            promises.push(this.ajax('/file', 'DELETE', formData))
+
+            return Promise.all(promises);
+        })
+
+    }//fim removeTask
 
     initEvents(){
+
+        this.btnDelete.addEventListener('click', e=>{
+            
+            this.removeTask().then(responses=>{
+
+                responses.forEach(response=>{
+
+                    if (response.fields.key){
+                        
+                        this.getFirebaseRef().child(esponse.fields.key).remove();
+
+                    }
+
+                })
+
+                console.log('responses')
+
+            }).catch(err=>{
+
+                console.error(err);
+                
+            });
+
+        });
+
+        this.btnRename.addEventListener('click', e=>{
+
+            let li = this.getSelection()[0];
+
+            let file = JSON.parse(li.dataset.file);
+
+            let name = prompt('Renomear o Arquivo:', file.name);
+
+            if (name){
+
+                file.name = name;
+
+                this.getFirebaseRef().child(li.dataset.key).set(file);
+            };
+
+
+        });
+
+        this.listFilesEl.addEventListener('selectionchange', e=>{
+
+            switch (this.getSelection().length){
+                
+                case 0:
+                    //ou seja se nao tiver ninguem selecionado oculta o btn delete e o btn rename
+                    this.btnDelete.style.display = 'none';
+                    this.btnRename.style.display = 'none';
+
+
+                break;
+                
+                case 1:
+                    //ou seja se tiver  1 selecionado aparece o btn delete e o btn rename
+                    this.btnDelete.style.display = 'block';
+                    this.btnRename.style.display = 'block';
+
+                break;
+
+                default:
+                    //ou seja se tiver + 1 selecionado aparece o btn delete e o btn rename some
+                    this.btnDelete.style.display = 'block';
+                    this.btnRename.style.display = 'none';
+
+                
+
+
+
+
+            };
+        })
+
         this.btnSendFileEl.addEventListener('click', event =>{
 
             this.inputFilesEl.click();//para abrir a janela de input files
@@ -84,7 +193,7 @@ class DropboxController {
         this.btnSendFileEl.disabled = false;
 
 
-    };
+    };//fim upload complete
 
 
     getFirebaseRef(){
@@ -101,17 +210,12 @@ class DropboxController {
 
     };//fim modal Show
 
+    ajax(url, method = 'GET', formData = new FormData(), onprogress = function(){}, onloadstart = function(){}){
+        return new Promise((resolve, reject)=>{
 
-    uploadTask(files){
+            let ajax = new XMLHttpRequest();
 
-        let promisses = [];
-
-        [...files].forEach(file=>{
-            promisses.push(new Promise((resolve, reject)=>{
-              
-                let ajax = new XMLHttpRequest();
-
-                ajax.open('POST', '/upload');
+                ajax.open(method, url);
 
                 ajax.onload = event => {
 
@@ -130,21 +234,41 @@ class DropboxController {
                 };
 
                 //para pegar em tempo real o progresso
-                ajax.upload.onprogress = event => {
+                ajax.upload.onprogress = onprogress;
 
-                    this.uploadProgress(event, file);
-                    //console.log(event);
-                };
+                onloadstart();
 
-                let formData = new FormData();
-
-                formData.append('input-file', file)
-
-                this.startUploadTime = Date.now();
 
                 ajax.send(formData);
 
-              }));
+
+        });
+        
+    }; //final ajax
+
+    uploadTask(files){
+
+        let promisses = [];
+        
+
+        [...files].forEach(file=>{
+
+            let formData = new FormData();
+
+            formData.append('input-file', file);
+
+            promisses.push(this.ajax('/upload', 'POST', formData, ()=>{
+
+
+                this.uploadProgress(event, file);
+                //console.log(event);
+
+
+            }, ()=>{
+
+                this.startUploadTime = Date.now();
+
+            }));
         });
 
         return Promise.all(promisses);
@@ -378,6 +502,7 @@ class DropboxController {
         let li = document.createElement('li');
 
         li.dataset.key = key;
+        li.dataset.file = JSON.stringify(file);
 
         li.innerHTML =`
         
@@ -395,6 +520,7 @@ class DropboxController {
     initEventsLi(li){
 
         li.addEventListener('click', e=>{
+
 
             if (e.shiftKey){
 
@@ -426,6 +552,7 @@ class DropboxController {
 
                     });
 
+                    this.listFilesEl.dispatchEvent(this.onselectionchange);
                     return true;
                     
 
@@ -444,6 +571,9 @@ class DropboxController {
             }
 
             li.classList.toggle('selected');
+
+            this.listFilesEl.dispatchEvent(this.onselectionchange);
+
 
         });
     };//end initEventsLi
@@ -472,3 +602,4 @@ class DropboxController {
 
 
 }; 
+
