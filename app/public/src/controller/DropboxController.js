@@ -385,10 +385,21 @@ class DropboxController {
         <div class="name text-center">${file.name}</div>
     `
 
+        this.initEventsLi(li)
+
         return li;
         
       
     };//final getFileView
+
+    initEventsLi(li){
+
+        li.addEventListener('click', e=>{
+
+            li.classList.toggle('selected');
+
+        });
+    };//end initEventsLi
 
     readFiles(){
 
@@ -409,7 +420,7 @@ class DropboxController {
 
         });
 
-    }
+    }; //end read files
 
 
 
